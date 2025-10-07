@@ -3,15 +3,22 @@ import dotenv from "dotenv"
 dotenv.config();
 
 export const authMiddleware = async (req,res,next)=>{
-    const token = req.headers.authorization?.slice(0,7);
-    if(!token) {
-         return res.status(401).json({
+    try {
+         const authHeader = req.headers.authorization
+        console.log(authHeader, "token auth header")
+        
+         if(!authHeader || !authHeader.startsWith("Bearer ")){
+             return res.status(401).json({
             success:false,
             message:"Token is not present"
         })
-    }
+         }
 
-    const decoded = await jwt.verify(token , process.env.JWT_SECRET)
+         const token = authHeader.split(" ")[1];
+         console.log(token)
+  
+
+    const decoded =  jwt.verify(token , process.env.JWT_SECRET)
 
     if(!decoded){
          return res.status(401).json({
@@ -21,4 +28,12 @@ export const authMiddleware = async (req,res,next)=>{
     }
     req.user = decoded
     next();
+    } catch (error) {
+        console.log(error)
+         return res.status(500).json({
+            success:false,
+            message:"Internal server error"
+        })
+    }
+   
 }

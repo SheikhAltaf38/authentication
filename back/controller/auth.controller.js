@@ -96,3 +96,14 @@ export const login = async (req, res) => {
     });
   }
 };
+
+
+export const checkAuth = async(req,res)=>{
+  const user = req.user
+
+  return res.status(200).json({
+    success:true,
+    message:"user is verified",
+    data:user
+  })
+}
